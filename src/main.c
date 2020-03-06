@@ -1,8 +1,8 @@
+#include "unscramble.h"
+#include "readdict.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "unscramble.h"
-#include "readdict.h"
 
 int main(int argc, char **argv)
 {
@@ -37,12 +37,29 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    printf("Word:       %s\n", word);
-    printf("Dictionary: %s\n", dictpath);
-    // TODO: unscramble
+    Dict *dict = new_dict();
+    if (read_dict(dict, dictpath) != READDICT_SUCCESS)
+    {
+        printf("Error: failed to read dictionary file\n");
+        free(word);
+        free(dictpath);
+        free_dict(dict);
+        return 1;
+    }
+
+    // Test that the dictionary was created
+    Dict *current = dict->next;
+    for (int i = 0; i < 10 && current != NULL; i++)
+    {
+        printf("%s\n", current->word);
+        current = current->next;
+    }
 
     free(word);
     free(dictpath);
+    free_dict(dict);
+
+    printf("Done\n");
 
     return 0;
 }
