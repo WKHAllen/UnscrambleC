@@ -15,13 +15,21 @@ int get_line(FILE *fp, char *line, int max)
     }
 }
 
-Dict *new_dict()
+Dict *new_dict(void)
 {
     Dict *dict = malloc(sizeof(Dict));
     dict->word = "";
     dict->next = NULL;
     dict->size = 0;
     return dict;
+}
+
+void dict_set_next_word(Dict *node, char *word)
+{
+    Dict *new_node = malloc(sizeof(Dict));
+    new_node->word = strdup(word);
+    new_node->next = NULL;
+    node->next = new_node;
 }
 
 int read_dict(Dict *dict, const char *dictpath)
@@ -36,10 +44,8 @@ int read_dict(Dict *dict, const char *dictpath)
     int linelen = 1;
     while ((linelen = get_line(fp, buffer, MAX_LINE_LEN)) > 0)
     {
-        Dict *new_node = malloc(sizeof(Dict));
-        new_node->word = strdup(buffer);
-        current->next = new_node;
-        current = new_node;
+        dict_set_next_word(current, buffer);
+        current = current->next;
         dict->size++;
     }
 

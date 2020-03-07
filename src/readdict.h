@@ -24,7 +24,9 @@ typedef struct dictnode
 
 int get_line(FILE *fp, char *line, int max);
 
-Dict *new_dict();
+Dict *new_dict(void);
+
+void dict_set_next_word(Dict *node, char *word);
 
 int read_dict(Dict *dict, const char *dictpath);
 

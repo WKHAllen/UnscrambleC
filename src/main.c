@@ -29,27 +29,24 @@ int main(int argc, char **argv)
         }
     }
 
+    int from_stdin = 0;
     if (strcmp(word, "") == 0)
-    {
-        printf("Error: no word given\n");
-        free(word);
-        free(dictpath);
-        return 1;
-    }
+        from_stdin = 1;
 
     Dict *dict = new_dict();
     if (read_dict(dict, dictpath) != READDICT_SUCCESS)
     {
         printf("Error: failed to read dictionary file\n");
-        free(word);
+        if (from_stdin == 0)
+            free(word);
         free(dictpath);
         free_dict(dict);
         return 1;
     }
 
-    // Test that the dictionary was created
-    Dict *current = dict->next;
-    for (int i = 0; i < 10 && current != NULL; i++)
+    Dict *words = unscramble(dict, word);
+    Dict *current = words->next;
+    while (current != NULL)
     {
         printf("%s\n", current->word);
         current = current->next;
@@ -58,8 +55,7 @@ int main(int argc, char **argv)
     free(word);
     free(dictpath);
     free_dict(dict);
-
-    printf("Done\n");
+    free_dict(words);
 
     return 0;
 }
