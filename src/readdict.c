@@ -17,7 +17,7 @@ int get_line(FILE *fp, char *line, int max)
 
 Dict *new_dict()
 {
-    Dict *dict = malloc(sizeof(dict));
+    Dict *dict = malloc(sizeof(Dict));
     dict->word = "";
     dict->next = NULL;
     dict->size = 0;
@@ -36,10 +36,8 @@ int read_dict(Dict *dict, const char *dictpath)
     int linelen = 1;
     while ((linelen = get_line(fp, buffer, MAX_LINE_LEN)) > 0)
     {
-        Dict *new_node = malloc(sizeof(new_node));
-        char *new_word = malloc((linelen + 1) * sizeof(char));
-        strcpy(new_word, buffer);
-        new_node->word = new_word;
+        Dict *new_node = malloc(sizeof(Dict));
+        new_node->word = strdup(buffer);
         current->next = new_node;
         current = new_node;
         dict->size++;
