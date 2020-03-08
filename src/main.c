@@ -17,22 +17,14 @@ int string_starts_with(const char *string, const char *start)
 
 int main(int argc, char **argv)
 {
-    if (argc == 1)
-    {
-        printf("Usage: %s <word> [-d dictionary-file]\n", argv[0]);
-        return 1;
-    }
-
     char *word = "";
     char *dictpath = "american-english";
     char *dictdir = "dict/";
     for (int i = 1; i < argc; i++)
-    {
         if ((strcmp(argv[i], "-d") == 0 || strcmp(argv[i], "--dict") == 0) && i != argc - 1)
             dictpath = strdup(argv[++i]);
         else if (strcmp(word, "") == 0)
             word = strdup(argv[i]);
-    }
 
     int from_stdin = 0;
     if (strcmp(word, "") == 0)
@@ -57,14 +49,59 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    Dict *words = unscramble(dict, word);
-    for (Dict *current = words->next; current != NULL; current = current->next)
-        printf("%s\n", current->word);
+    Dict *words;
+    int words_init = 0;
+    if (from_stdin == 0)
+    {
+        words = unscramble(dict, word);
+        words_init = 1;
+        for (Dict *current = words->next; current != NULL; current = current->next)
+            printf("%s\n", current->word);
+    }
+    else
+    {
+        word = NULL;
+        size_t size;
+        int linelen = getline(&word, &size, stdin);
+        if (linelen == -1)
+        {
+            free(word);
+            free(dictpath);
+            free_dict(dict);
+            printf("Error: failed to read input from stdin\n");
+            return 1;
+        }
+        else if (linelen > 0)
+            word[linelen - 1] = '\0';
+
+        while (word[0] != '\0')
+        {
+            words = unscramble(dict, word);
+            words_init = 1;
+            for (Dict *current = words->next; current != NULL; current = current->next)
+                printf("  %s\n", current->word);
+
+            word = NULL;
+            linelen = getline(&word, &size, stdin);
+            if (linelen == -1)
+            {
+                free(word);
+                free(dictpath);
+                free_dict(dict);
+                free_dict(words);
+                printf("Error: failed to read input from stdin\n");
+                return 1;
+            }
+            else if (linelen > 0)
+                word[linelen - 1] = '\0';
+        }
+    }
 
     free(word);
     free(dictpath);
     free_dict(dict);
-    free_dict(words);
+    if (words_init == 1)
+        free_dict(words);
 
     return 0;
 }
