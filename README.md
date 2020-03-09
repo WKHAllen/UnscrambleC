@@ -4,17 +4,38 @@ A C program that unscrambles words.
 
 ## Usage
 
-To use the unscrambler, simply run the program and pass the scrambled word as the primary argument. Example:
+To use the unscrambler, simply run the program and pass the scrambled word as the primary argument.
 
 ```console
 $ unscramble loelh
 hello
 ```
 
-To use a different dictionary, use -d. Example:
+If no word is provided, standard input will be used.
 
 ```console
-$ unscramble -d dict/british-english locoru
+$ unscramble
+> cats
+  | acts
+  | cast
+  | cats
+  | scat
+> else
+  | eels
+  | else
+  | lees
+>
+$
+```
+
+To exit the standard input prompt, provide no input.
+
+### Dictionaries
+
+To use a different dictionary, use -d.
+
+```console
+$ unscramble -d british-english locoru
 colour
 ```
 
