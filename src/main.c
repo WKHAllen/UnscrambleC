@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stddef.h>
 
 int string_starts_with(const char *string, const char *start)
 {
@@ -13,6 +14,14 @@ int string_starts_with(const char *string, const char *start)
     if (string[i] == '\0' && start[i] != '\0')
         return 0;
     return 1;
+}
+
+int input(char *prompt, char **string)
+{
+    *string = NULL;
+    size_t size;
+    printf("%s", prompt);
+    return getline(string, &size, stdin);
 }
 
 int main(int argc, char **argv)
@@ -60,9 +69,7 @@ int main(int argc, char **argv)
     }
     else
     {
-        word = NULL;
-        size_t size;
-        int linelen = getline(&word, &size, stdin);
+        int linelen = input("> ", &word);
         if (linelen == -1)
         {
             free(word);
@@ -79,10 +86,9 @@ int main(int argc, char **argv)
             words = unscramble(dict, word);
             words_init = 1;
             for (Dict *current = words->next; current != NULL; current = current->next)
-                printf("  %s\n", current->word);
+                printf("  | %s\n", current->word);
 
-            word = NULL;
-            linelen = getline(&word, &size, stdin);
+            linelen = input("> ", &word);
             if (linelen == -1)
             {
                 free(word);
